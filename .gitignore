@@ -1,0 +1,22 @@
+# secrets
+.env
+.env.*
+
+# python
+__pycache__/
+*.pyc
+
+# airflow
+airflow/config/airflow.cfg
+
+# virtual envs
+abs_building_approvals_venv/
+.venv/
+
+# dbt + airflow (logs/ matches both airflow/logs/ and dbt logs/)
+logs/
+target/
+dbt_packages/
+
+# editor
+.vscode/
