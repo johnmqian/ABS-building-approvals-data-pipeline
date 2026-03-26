@@ -78,9 +78,9 @@ def upload_to_s3(local_path: str, bucket: str, key: str, region: str) -> None:
 # -----------------------------
 def main():
     session = build_requests_session()
-    aws_region = os.getenv("AWS_DEFAULT_REGION", "ap-southeast-2")
+    aws_region = os.getenv("AWS_DEFAULT_REGION")
     s3_bucket = os.getenv("S3_BUCKET")
-    project_prefix = os.getenv("S3_PROJECT_PREFIX", "").strip("/")
+    project_prefix = (os.getenv("S3_PROJECT_PREFIX") or "").strip("/")
 
     if not s3_bucket:
         raise ValueError("S3_BUCKET is not set")
