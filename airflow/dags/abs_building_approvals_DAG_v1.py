@@ -11,7 +11,7 @@ from airflow.providers.databricks.operators.databricks import DatabricksRunNowOp
 # ── Pipeline constants ────────────────────────────────────────────────────────
 S3_BUCKET          = "johnq-data-lake-dev"
 S3_PROJECT_PREFIX  = "abs-building-approvals"
-AWS_REGION         = "ap-southeast-2"
+AWS_DEFAULT_REGION = "ap-southeast-2"
 TZ                 = pendulum.timezone("Australia/Melbourne")
 
 default_args = {
@@ -75,7 +75,7 @@ with DAG(
             "PYTHONPATH":        "/opt/project",
             "S3_BUCKET":         S3_BUCKET,
             "S3_PROJECT_PREFIX": S3_PROJECT_PREFIX,
-            "AWS_REGION":        AWS_REGION,
+            "AWS_DEFAULT_REGION": AWS_DEFAULT_REGION,
             "START_PERIOD":      "{{ params.start_period }}",
             "END_PERIOD":        "{{ params.end_period }}",
             "INGESTION_DATE":    "{{ ti.xcom_pull(task_ids='generate_params', key='ingestion_date') }}",
