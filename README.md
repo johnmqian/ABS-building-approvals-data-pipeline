@@ -139,7 +139,8 @@ s3://johnq-data-lake-dev/abs-building-approvals/bronze/
 ### 3. Silver — `run_silver_databricks` (DatabricksRunNowOperator)
 
 **Notebook:** `databricks/notebooks/10_silver_abs_building_approvals.ipynb`
-**Databricks Job ID:** `35620647428943`
+**Databricks Job ID:** `1099697880350402`
+**Compute:** Serverless
 
 Reads the Bronze Parquet for the given `ingestion_date` and produces a cleaned Delta table.
 
@@ -160,7 +161,8 @@ s3://johnq-data-lake-dev/abs-building-approvals/silver/   (Delta table, partitio
 ### 4. Gold — `run_gold_databricks` (DatabricksRunNowOperator)
 
 **Notebook:** `databricks/notebooks/20_gold_abs_building_approvals.ipynb`
-**Databricks Job ID:** `114657385781599`
+**Databricks Job ID:** `700454854795481`
+**Compute:** Serverless
 
 Reads the Silver Delta table filtered to the current `ingestion_date` and produces an aggregated analytics table.
 
@@ -219,7 +221,7 @@ pyarrow
 
 - Docker + Docker Compose
 - AWS credentials with S3 read/write access to `johnq-data-lake-dev`
-- Databricks workspace with jobs `35620647428943` (Silver) and `114657385781599` (Gold) configured
+- Databricks workspace with jobs `1099697880350402` (Silver) and `700454854795481` (Gold) configured
 - Airflow Databricks connection named `databricks_default`
 
 ### 1. Configure environment
