@@ -1,0 +1,7 @@
+version: 2
+sources:
+  - name: SILVER_ABS_BUILDING_APPROVALS # Alis for dbt
+    database: ABS_BUILDING_APPROVALS_DATABASE
+    schema: ABS_BUILDING_APPROVALS
+    tables:
+      - name: SILVER_ABS_BUILDING_APPROVALS

@@ -11,7 +11,7 @@ airflow/config/airflow.cfg
 
 # virtual envs
 abs_building_approvals_venv/
-.venv/
+dbt-env/
 
 # dbt + airflow (logs/ matches both airflow/logs/ and dbt logs/)
 logs/

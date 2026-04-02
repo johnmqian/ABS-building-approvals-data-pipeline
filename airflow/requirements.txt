@@ -1,4 +1,6 @@
 apache-airflow-providers-databricks
+apache-airflow-providers-snowflake
+dbt-snowflake
 boto3
 requests
 pandas
