@@ -1,4 +1,4 @@
-# dags/abs_building_approvals_pipeline.py
+# dags/abs_building_approvals_w_snowflake_DAG_v1.py
 
 from datetime import timedelta
 import pendulum
@@ -7,6 +7,7 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.providers.databricks.operators.databricks import DatabricksRunNowOperator
+from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
 
 # ── Pipeline constants ────────────────────────────────────────────────────────
 S3_BUCKET          = "johnq-data-lake-dev"
@@ -44,7 +45,7 @@ def generate_params(**context) -> None:
 
 # ── DAG ───────────────────────────────────────────────────────────────────────
 with DAG(
-    dag_id      = "abs_building_approvals_pipeline_DAG_v1",
+    dag_id      = "abs_building_approvals_pipeline_w_snowflake_DAG_v1",
     default_args = default_args,
     start_date  = pendulum.datetime(2026, 1, 1, tz=TZ),
     schedule    = None,
@@ -95,16 +96,24 @@ with DAG(
         },
     )
 
-    # 4. Gold — same pattern as Silver
-    run_gold_databricks = DatabricksRunNowOperator(
-        task_id           = "run_gold_databricks",
-        databricks_conn_id = "databricks_default",
-        job_id            = 700454854795481,
-        notebook_params   = {
-            "ingestion_date": "{{ ti.xcom_pull(task_ids='generate_params', key='ingestion_date') }}",
-            "run_id":         "{{ ti.xcom_pull(task_ids='generate_params', key='run_id') }}",
-        },
+    # 4. Load silver to Snowflake
+    run_load_silver_snowflake = SnowflakeOperator(
+        task_id = "run_load_silver_snowflake",
+        snowflake_conn_id = "snowflake_default",
+        sql = """
+            COPY INTO ABS_BUILDING_APPROVALS_DATABASE.ABS_BUILDING_APPROVALS.SILVER_ABS_BUILDING_APPROVALS
+            FROM @ABS_BUILDING_APPROVALS_DATABASE.ABS_BUILDING_APPROVALS.S3_SILVER_STAGE
+            FILE_FORMAT = (TYPE = 'PARQUET')
+            MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE
+            PATTERN = '.*\parquet';
+        """
     )
 
-    # 5. Task chain
-    generate_params_task >> run_bronze_ingestion >> run_silver_databricks >> run_gold_databricks
+    # 5. Run gold dbt
+    run_gold_dbt = BashOperator(
+        task_id = "run_gold_dbt",
+        bash_command = "set -euo pipefail; cd /opt/project/dbt && dbt run --select gold_abs_building_approvals --profiles-dir /home/airflow/.dbt"
+    )
+
+    # 6. Task chain
+    generate_params_task >> run_bronze_ingestion >> run_silver_databricks >> run_load_silver_snowflake >> run_gold_dbt

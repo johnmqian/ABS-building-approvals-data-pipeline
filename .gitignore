@@ -8,6 +8,7 @@ __pycache__/
 
 # airflow
 airflow/config/airflow.cfg
+airflow/secrets/
 
 # virtual envs
 abs_building_approvals_venv/

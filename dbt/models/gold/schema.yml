@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: gold_abs_building_approvals
+    columns:
+      - name: time_period
+        tests:
+          - not_null
+      - name: region_code
+        tests:
+          - not_null
+      - name: obs_value_total
+        tests:
+          - not_null
